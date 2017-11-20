@@ -14,83 +14,102 @@ var scoreWrong;
 var timerCount;
 var questionsLeft;
 var questionsRemaining;
-var currentAnswer;
+var currentCorrectAnswer;
 var questionAnswered;
 var currentSelection;
-var stillPlayin;
+var nowPlayin;
 var tempVar;
+var randQuestionIndex;
 var questionBank=[{
 		questionId: 0,
 		questionText: "Who wrote the book Alice In Wonderland?",
 		questionChoices: ["Lewis Carroll", "J.K. Rowling", "Louis Carroll"],
-		questionAnswerIndex: 0,
+		correctAnswerIndex: 0,
 		questionStatus: "false"
 	},{
 		questionId: 1,
 		questionText: "What is the abbreviation for Washington, D.C.?",
 		questionChoices: ["DC", "WA", "WD"],
-		questionAnswerIndex: 0,
+		correctAnswerIndex: 0,
 		questionStatus: "false"
 	},{
 		questionId: 2,
 		questionText: "Are walruses found in the South Pole?",
 		questionChoices: ["Yes", "No", "No, they're found around New Zealand"],
-		questionAnswerIndex: 1,
+		correctAnswerIndex: 1,
 		questionStatus: "false"
 	},{
 		questionId: 3,
 		questionText: "How many sonnets did William Shakespeare write?",
 		questionChoices: ["154", "108", "167"],
-		questionAnswerIndex: 0,
+		correctAnswerIndex: 0,
 		questionStatus: "false"
 	},{
 		questionId: 4,
 		questionText: "Were jeans always blue?",
 		questionChoices: ["No", "Yes", "They were yellow"],
-		questionAnswerIndex: 0,
+		correctAnswerIndex: 0,
 		questionStatus: "false"
 	}]
 
-$("#timer").text("Countdown Timer: ** seconds");
 resetGame();
-displayQuestion();
+gameOn();
 
+// used to start/reset game...not working yet
+function gameOn () {
+	console.log("game on");	
+	$("p").html("<button id='reset'>Reset</button>");
+	$("p").append("<button id='start'>Start</button> Press 'Start' when ready to start. You'll have 5 seconds to answer each question. Don't suck.");
+
+	$("#reset").click(function(){
+		resetGame();
+		clockStop();
+		$("#questionArea").hide();
+		$("#answerArea").hide();
+	});
+
+	$("#start").click(function(){
+		$("#questionArea").show();
+		$("#answerArea").show();
+		displayQuestion();
+	});
+
+
+}
 // called when game resets...resets parameters and counters
 function resetGame(){
 	quizEnabled=false;
 	scoreRight=0;
 	scoreWrong=0;
 	questionsRemaining=questionBank.length;
+	$("#timer").text("Countdown Timer: ** seconds");
 	for (i=0; i<questionBank.length;i++) {
 		questionBank[i].questionStatus="false";
 	}
-	stillPlayin=true;
+	nowPlayin=true;
+	clockRunning=false;
 	refreshScores();
 	questionsLeft();
-	clockRunning=false;
 }
 // display a question
 function displayQuestion () {
-	var randQuestionIndex=Math.floor(Math.random()*questionBank.length);
+	randQuestionIndex=Math.floor(Math.random()*questionBank.length);
 	console.log("This is the new random question index: "+randQuestionIndex);
 	refreshScores();
-	clockStop();
+	clockRunning=false;
 
-	if (stillPlayin===true && questionBank[randQuestionIndex].questionStatus=="true") {
-			refreshScores();
-			console.log("question already used, trying again");
-	        clockRunning = false;
+	if (nowPlayin===true && questionBank[randQuestionIndex].questionStatus=="true") {
+			console.log("Index already used, randomizing again");
 			displayQuestion();
 
 	}
-	else if (stillPlayin===true && questionBank[randQuestionIndex].questionStatus=="false") {
+	else if (nowPlayin===true && questionBank[randQuestionIndex].questionStatus=="false") {
 		// changes displayed question
 		$("#questionArea").html("<h2>"+questionBank[randQuestionIndex].questionText+"</h2>");
 		// sets index of currently currect answer
-		currentAnswer=questionBank[randQuestionIndex].questionAnswerIndex;
-		console.log("Random question not already used, time to guess!");
+		currentCorrectAnswer=questionBank[randQuestionIndex].correctAnswerIndex;
+		console.log("Index not already used, time to guess!");
 		clockStart();
-		refreshScores();
 		
 		// calls sub function
 		displayAnswer();
@@ -99,52 +118,53 @@ function displayQuestion () {
 			$("#answerArea").append("<button class='guess' id='one'>"+questionBank[randQuestionIndex].questionChoices[1]+"</button><br>");
 			$("#answerArea").append("<button class='guess' id='two'>"+questionBank[randQuestionIndex].questionChoices[2]+"</button><br>");
 			questionBank[randQuestionIndex].questionStatus="true";
-
+			questionAnswered=false;
 		}
 
 		$("#zero").click(function(){
 			currentSelection=0;	
-			if (currentSelection==currentAnswer) {
+			console.log("This question index has been marked used: "+randQuestionIndex);
+			questionsLeft();
+			clockRunning=false;
+			questionAnswered=true;if (currentSelection==currentCorrectAnswer) {
 				gotItRight();
 			}
 			else {
 				gotItWrong();
 			}
-			console.log("This question index has been marked used: "+randQuestionIndex);
-			questionsLeft();
-			clockRunning=false;
-			questionAnswered=true;
-
+			clockStop();	
 			displayQuestion();
 		});
 
 		$("#one").click(function(){
 			currentSelection=1;
-			if (currentSelection==currentAnswer) {
+			console.log("This question index has been marked used: "+randQuestionIndex);
+			questionsLeft();
+			clockRunning=false;
+			questionAnswered=true;
+			if (currentSelection==currentCorrectAnswer) {
 				gotItRight();
 			}
 			else {
 				gotItWrong();
 			}
-			console.log("This question index has been marked used: "+randQuestionIndex);
-			questionsLeft();
-			clockRunning=false;
-			questionAnswered=true;
+			clockStop();	
 			displayQuestion();
 		});
 
 		$("#two").click(function(){
 			currentSelection=2;
-			if (currentSelection==currentAnswer) {
+			console.log("This question index has been marked used: "+randQuestionIndex);
+			questionsLeft();
+			clockRunning=false;
+			questionAnswered=true;
+			if (currentSelection==currentCorrectAnswer) {
 				gotItRight();
 			}
 			else {
 				gotItWrong();
 			}
-			console.log("This question index has been marked used: "+randQuestionIndex);
-			questionsLeft();
-			clockRunning=false;
-			questionAnswered=true;	
+			clockStop();	
 			displayQuestion();
 		});
 	}
@@ -165,7 +185,7 @@ function questionsLeft(){
 		}
 	}
 	if (questionsRemaining==0) {
-		stillPlayin=false;
+		nowPlayin=false;
 		console.log("function questionsLeft: you're out of questions.");
 	}
 	$("#questionsRem").text("Questions Remaining: "+questionsRemaining);
@@ -179,11 +199,13 @@ function refreshScores(){
 // called when correct answer is selected
 function gotItRight(){
 	scoreRight++;
+	$("#timer").text("Countdown Timer: ** seconds");
 	console.log("new right score: "+scoreRight);
 }
 // called when incorrect answer is selected
 function gotItWrong(){
 	scoreWrong++;
+	$("#timer").text("Countdown Timer: ** seconds");
 	console.log("new wrong score is: "+scoreWrong)
 }
 // starts countdown clock
@@ -193,9 +215,9 @@ function clockStart(){
         timerCount=5;
     	$("#timer").text("Countdown Timer: "+timerCount+" seconds");
         clockRunning = true;
+
         tempVar = setInterval (function(){
-        	timerCount--;
-        	
+        	timerCount--;      	
         	$("#timer").text("Countdown Timer: "+timerCount+" seconds");
         	console.log(timerCount);
         	
@@ -209,22 +231,17 @@ function clockStart(){
 
         	else if (questionAnswered==true) {
         		clockStop();
-        		console.log("timer cleared");
-        		questionAnswered=false;
+        		console.log("quesetion answered, timer cleared");
         		questionsLeft();
         	}
-
-
         }, 1000);
     }
 }
 
 function clockStop(){
-	if (clockRunning) {
-		clearInterval(tempVar);
-        console.log("clock stopped");
-        clockRunning = false;
-	}
+	clearInterval(tempVar);
+    console.log("clock stopped");
+    clockRunning = false;
 }
 
 
