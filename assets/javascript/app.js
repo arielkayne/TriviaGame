@@ -1,8 +1,8 @@
-// pseudocoding stuff left to do...
+// pseudocoding stuff left to do...plus bonus janky hacky buggy code!
 
 // 	need a start screen/instructions
 //		start/reset buttons? 
-// 	countdown timer
+// 	countdown timer - semi works, but breaks when answers...think i might need to change functions called and clear intervals somewhere
 // 		timer reset, timer=zero actions
 // 	make it prettier
 
@@ -15,8 +15,10 @@ var timerCount;
 var questionsLeft;
 var questionsRemaining;
 var currentAnswer;
+var questionAnswered;
 var currentSelection;
 var stillPlayin;
+var tempVar;
 var questionBank=[{
 		questionId: 0,
 		questionText: "Who wrote the book Alice In Wonderland?",
@@ -72,12 +74,13 @@ function displayQuestion () {
 	var randQuestionIndex=Math.floor(Math.random()*questionBank.length);
 	console.log("This is the new random question index: "+randQuestionIndex);
 	refreshScores();
+	clockStop();
 
 	if (stillPlayin===true && questionBank[randQuestionIndex].questionStatus=="true") {
 			refreshScores();
 			console.log("question already used, trying again");
-			displayQuestion();
 	        clockRunning = false;
+			displayQuestion();
 
 	}
 	else if (stillPlayin===true && questionBank[randQuestionIndex].questionStatus=="false") {
@@ -86,6 +89,7 @@ function displayQuestion () {
 		// sets index of currently currect answer
 		currentAnswer=questionBank[randQuestionIndex].questionAnswerIndex;
 		console.log("Random question not already used, time to guess!");
+		clockStart();
 		refreshScores();
 		
 		// calls sub function
@@ -94,9 +98,9 @@ function displayQuestion () {
 			$("#answerArea").html("<button class='guess' id='zero'>"+questionBank[randQuestionIndex].questionChoices[0]+"</button><br>");
 			$("#answerArea").append("<button class='guess' id='one'>"+questionBank[randQuestionIndex].questionChoices[1]+"</button><br>");
 			$("#answerArea").append("<button class='guess' id='two'>"+questionBank[randQuestionIndex].questionChoices[2]+"</button><br>");
+			questionBank[randQuestionIndex].questionStatus="true";
+
 		}
-        clockRunning = false;
-		clockStart();
 
 		$("#zero").click(function(){
 			currentSelection=0;	
@@ -106,11 +110,11 @@ function displayQuestion () {
 			else {
 				gotItWrong();
 			}
-
-			questionBank[randQuestionIndex].questionStatus="true";
 			console.log("This question index has been marked used: "+randQuestionIndex);
 			questionsLeft();
 			clockRunning=false;
+			questionAnswered=true;
+
 			displayQuestion();
 		});
 
@@ -122,10 +126,10 @@ function displayQuestion () {
 			else {
 				gotItWrong();
 			}
-			questionBank[randQuestionIndex].questionStatus="true";
 			console.log("This question index has been marked used: "+randQuestionIndex);
 			questionsLeft();
 			clockRunning=false;
+			questionAnswered=true;
 			displayQuestion();
 		});
 
@@ -137,10 +141,10 @@ function displayQuestion () {
 			else {
 				gotItWrong();
 			}
-			questionBank[randQuestionIndex].questionStatus="true";
 			console.log("This question index has been marked used: "+randQuestionIndex);
 			questionsLeft();
 			clockRunning=false;
+			questionAnswered=true;	
 			displayQuestion();
 		});
 	}
@@ -166,6 +170,7 @@ function questionsLeft(){
 	}
 	$("#questionsRem").text("Questions Remaining: "+questionsRemaining);
 }
+// changes information displayed re: scores/timer
 function refreshScores(){
 	$("#questionsRight").text("Correct Answers: "+scoreRight);
 	$("#questionsWrong").text("Incorrect Answers: "+scoreWrong);
@@ -188,18 +193,27 @@ function clockStart(){
         timerCount=5;
     	$("#timer").text("Countdown Timer: "+timerCount+" seconds");
         clockRunning = true;
-        var tempVar = setInterval (function(){
+        tempVar = setInterval (function(){
         	timerCount--;
+        	
         	$("#timer").text("Countdown Timer: "+timerCount+" seconds");
         	console.log(timerCount);
         	
         	if (timerCount==0) {
-        		clearInterval(tempVar);
+				clockStop();
         		console.log("You ran out of time.");
         		questionsLeft();
         		gotItWrong();
         		displayQuestion();
         	}
+
+        	else if (questionAnswered==true) {
+        		clockStop();
+        		console.log("timer cleared");
+        		questionAnswered=false;
+        		questionsLeft();
+        	}
+
 
         }, 1000);
     }
@@ -207,11 +221,12 @@ function clockStart(){
 
 function clockStop(){
 	if (clockRunning) {
+		clearInterval(tempVar);
         console.log("clock stopped");
-        
         clockRunning = false;
 	}
 }
+
 
 
   //   // DONE: increment time by 1, remember we cant use "this" here.
