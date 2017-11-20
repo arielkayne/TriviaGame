@@ -1,9 +1,6 @@
 // pseudocoding stuff left to do...plus bonus janky hacky buggy code!
 
 // 	need a start screen/instructions
-//		start/reset buttons? 
-// 	countdown timer - semi works, but breaks when answers...think i might need to change functions called and clear intervals somewhere
-// 		timer reset, timer=zero actions
 // 	make it prettier
 
 
@@ -50,16 +47,46 @@ var questionBank=[{
 		questionChoices: ["No", "Yes", "They were yellow"],
 		correctAnswerIndex: 0,
 		questionStatus: "false"
+	},{
+		questionId: 5,
+		questionText: "How old was Tony Hawk when he started skateboarding?",
+		questionChoices: ["5", "7", "9"],
+		correctAnswerIndex: 2,
+		questionStatus: "false"
+	},{
+		questionId: 6,
+		questionText: "What is the other name for General Motors?",
+		questionChoices: ["G Motors", "General M's", "G.M."],
+		correctAnswerIndex: 2,
+		questionStatus: "false"
+	},{
+		questionId: 7,
+		questionText: "Complete this phrase: Dr. Livingstone,",
+		questionChoices: ["I presume", "I find", "I see"],
+		correctAnswerIndex: 0,
+		questionStatus: "false"
+	},{
+		questionId: 8,
+		questionText: "What year did the penny start having Lincoln's face on it?",
+		questionChoices: ["1909", "1897", "1898"],
+		correctAnswerIndex: 0,
+		questionStatus: "false"
+	},{
+		questionId: 9,
+		questionText: "Where were cats most honored?",
+		questionChoices: ["USA", "Greece", "Egypt"],
+		correctAnswerIndex: 2,
+		questionStatus: "false"
 	}]
 
 resetGame();
 gameOn();
 
-// used to start/reset game...not working yet
+// used to start/reset game
 function gameOn () {
 	console.log("game on");	
 	$("p").html("<button id='reset'>Reset</button>");
-	$("p").append("<button id='start'>Start</button> Press 'Start' when ready to start. You'll have 5 seconds to answer each question. Don't suck.");
+	$("p").append("<button id='start'>Start</button> Press 'Start' when ready to start. You'll have 10 seconds to answer each question. Don't suck.");
 
 	$("#reset").click(function(){
 		resetGame();
@@ -69,12 +96,12 @@ function gameOn () {
 	});
 
 	$("#start").click(function(){
+		resetGame();
+		clockStop();
 		$("#questionArea").show();
 		$("#answerArea").show();
 		displayQuestion();
 	});
-
-
 }
 // called when game resets...resets parameters and counters
 function resetGame(){
@@ -212,7 +239,7 @@ function gotItWrong(){
 function clockStart(){
 	if (!clockRunning) {
         console.log("clock started");
-        timerCount=5;
+        timerCount=10;
     	$("#timer").text("Countdown Timer: "+timerCount+" seconds");
         clockRunning = true;
 
@@ -237,105 +264,9 @@ function clockStart(){
         }, 1000);
     }
 }
-
+// stops clock
 function clockStop(){
 	clearInterval(tempVar);
     console.log("clock stopped");
     clockRunning = false;
 }
-
-
-
-  //   // DONE: increment time by 1, remember we cant use "this" here.
-  //   stopwatch.time++;
-
-  //   // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
-  //   //       and save the result in a variable.
-  //   var converted = stopwatch.timeConverter(stopwatch.time);
-  //   console.log(converted);
-
-  //   // DONE: Use the variable we just created to show the converted time in the "display" div.
-  //   $("#display").text(converted);
-  // },
-
-
-// ----------------------------------------------crap below this line....----------------------------------------------
-
-
-// called when time runs out
-// function timesUp () {
-// 	console.log("function- time's up");
-// 	gotItWrong();
-// 	// increments incorrect answer var
-// 	// makes noise
-// }
-
-
-
-
-
-// // stuff that doesn't quite work yet below
-// function answerClick (){
-// 	console.log("answerclick");
-// }
-
-// // function newCountdown(){
-// // 	console.log("function- new countdown requested");
-// // 	$("#timer").text("00:05");
-// }
-
-	// reset timer, start 5 second countdown
-	// display answers on buttons
-	// onclick check answer (get index of questionCHoices and compare to AnswerIndex)
-
-
-
-
-
-// ### Option Two: Advanced Assignment (Timed Questions)
-
-// ![Advanced](Images/2-advanced.jpg)
-
-// **[Click Here to Watch the demo](advanced-trivia-demo.mov)**.
-
-// * You'll create a trivia game that shows only one question until the player answers it or their time runs out.
-
-
-
-
-// * If the player selects the correct answer, show a screen congratulating them for choosing the right option. After a few seconds, display the next question -- do this without user input.
-
-// * The scenario is similar for wrong answers and time-outs.
-
-//   * If the player runs out of time, tell the player that time's up and display the correct answer. Wait a few seconds, then show the next question.
-//   * If the player chooses the wrong answer, tell the player they selected the wrong option and then display the correct answer. Wait a few seconds, then show the next question.
-
-// * On the final screen, show the number of correct answers, incorrect answers, and an option to restart the game (without reloading the page).
-
- 
-// How old was Tony Hawk when he started skateboarding?
-// 5
-// 7
-// 9
- 
-// What is the other name for General Motors?
-// G Motors
-// General M's
-// G.M.
-
-// Where were cats most honored?
-// USA
-// Greece
-// Egypt 
-
-// Complete this phrase-Dr. Livingstone,
-
-// I presume
-// I find
-// I see
-
-// What year did the penny start having Lincoln's face on it?
-
-// 1909
-// 1897
-// 1898
