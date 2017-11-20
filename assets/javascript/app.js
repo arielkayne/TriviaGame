@@ -1,8 +1,12 @@
 // pseudocoding stuff left to do...plus bonus janky hacky buggy code!
 
 // 	need a start screen/instructions
-// 	make it prettier
-
+// 		make it prettier
+// need to program in correct answer responses and delays for next questions
+	// you got it right display w/ correct answer + 2 sec delay
+	// you got it wrong display w/ correct answer+ 2 sec delay
+	// if time's up, same as wrong+time's up alert
+// program final screen with win/loss status
 
 var clockRunning;
 var quizEnabled;
@@ -84,18 +88,18 @@ gameOn();
 
 // used to start/reset game
 function gameOn () {
+	$("p").html("<button id='reset'>Reset</button> <button id='start'>Start</button> Press 'Start' when ready to start. You'll have 10 seconds to answer each question. Don't suck.");
 	console.log("game on");	
-	$("p").html("<button id='reset'>Reset</button>");
-	$("p").append("<button id='start'>Start</button> Press 'Start' when ready to start. You'll have 10 seconds to answer each question. Don't suck.");
-
 	$("#reset").click(function(){
 		resetGame();
 		clockStop();
 		$("#questionArea").hide();
 		$("#answerArea").hide();
+
 	});
 
 	$("#start").click(function(){
+		console.log("start clicked");
 		resetGame();
 		clockStop();
 		$("#questionArea").show();
@@ -196,8 +200,8 @@ function displayQuestion () {
 		});
 	}
 	else {
-		$("#questionArea").html("<h2>You won or lost...depends on how badly you scored</h2>");
-		$("#answerArea").html("<p>Most likely, you need to study up and try again.</p>");
+		$("#questionArea").html("<h2>You won or lost...depends on how badly you scored</h2><br>");
+		$("#answerArea").html("<p>You scored "+(scoreRight/questionBank.length*100)+"% on this quiz.</p><br>"+"<p>Best to study and try again.</p><br>"+"<p>Click the 'Reset' button above to start over.</p>");
 	}	
 }
 // called to update questions remaining counter
